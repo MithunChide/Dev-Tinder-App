@@ -1,0 +1,22 @@
+{
+  "name": "dev-tinder",
+  "version": "1.0.0",
+  "description": "Dev Tinder Backend ",
+  "keywords": [
+    "NodeJs",
+    "Javascript",
+    "Express"
+  ],
+  "license": "ISC",
+  "author": "Mithun Chide",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
