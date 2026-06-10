@@ -15,7 +15,13 @@ app.get('/admin/getAdminData', (req,res) => {
 })
 
 app.get('/admin/deleteAdminData', (req,res) => {
-    res.send("Delete the admin data")
+    res.send("Deleted the admin data")
+})
+
+app.use("/", (err, req, res, next) => {
+    if(err) {
+        res.status(500).send("Something went wrong");
+    }
 })
 
 app.listen(3000, () => {
