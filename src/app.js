@@ -2,16 +2,22 @@
 const express = require('express');
 const app = express();
 
+const { adminAuth, userAuth }= require('./middlewares/auth');
 
-app.use("/test",(req,res) => {
-    res.send("Hello testing")
+app.use("/admin", adminAuth); //middleware for admin routes
+
+app.get('/user', userAuth, (req,res) => {
+    res.send("User data added")
 })
-app.use("/mithun",(req,res) => {
-    res.send("Hey Mithun....enjoy coding")
+
+app.get('/admin/getAdminData', (req,res) => {
+    res.send("Get all the admin data")
 })
-app.use("/",(req,res) => {
-    res.send("Hello worlld")
+
+app.get('/admin/deleteAdminData', (req,res) => {
+    res.send("Delete the admin data")
 })
+
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
