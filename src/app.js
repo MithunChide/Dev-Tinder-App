@@ -1,29 +1,39 @@
 
 const express = require('express');
+const connectDB = require("./config/database");
+const User = require("./Models/user");
 const app = express();
 
-const { adminAuth, userAuth }= require('./middlewares/auth');
+app.use(express.json()); // Add this for JSON parsing
 
-app.use("/admin", adminAuth); //middleware for admin routes
 
-app.get('/user', userAuth, (req,res) => {
-    res.send("User data added")
-})
+app.post("/signup", async (req, res) => {
+   console.log("Signup request received");
+   const user = new User({
+        firstName :"Rohit",
+        lastName: "Sharma",
+        email:"rohit@gmail.com",
+        password:"Rohit@143"
+   });
 
-app.get('/admin/getAdminData', (req,res) => {
-    res.send("Get all the admin data")
-})
-
-app.get('/admin/deleteAdminData', (req,res) => {
-    res.send("Deleted the admin data")
-})
-
-app.use("/", (err, req, res, next) => {
-    if(err) {
-        res.status(500).send("Something went wrong");
-    }
-})
-
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+   try {
+   await user.save();
+    res.send("User added successfully...")
+   } catch (err) {
+     console.log("Error:", err);
+     res.status(400).send("Error saving the data:" + err.message)
+   }
 });
+
+
+
+connectDB().
+then(() => {
+    console.log("Database connection established...")
+    app.listen(7777, () => {
+        console.log('Server is successfully listening on port 7777...');
+    });
+}).catch(err => {
+    console.error("Database cannot connected...", err);
+})
+
