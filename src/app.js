@@ -4,17 +4,11 @@ const connectDB = require("./config/database");
 const User = require("./Models/user");
 const app = express();
 
-app.use(express.json()); // Add this for JSON parsing
+app.use(express.json()); // Add this middleware for JSON parsing
 
 
 app.post("/signup", async (req, res) => {
-   console.log("Signup request received");
-   const user = new User({
-        firstName :"Rohit",
-        lastName: "Sharma",
-        email:"rohit@gmail.com",
-        password:"Rohit@143"
-   });
+   const user = new User(req.body);
 
    try {
    await user.save();
@@ -26,14 +20,14 @@ app.post("/signup", async (req, res) => {
 });
 
 
-
-connectDB().
-then(() => {
+connectDB()
+.then(() => {
     console.log("Database connection established...")
     app.listen(7777, () => {
         console.log('Server is successfully listening on port 7777...');
     });
-}).catch(err => {
+})
+.catch(err => {
     console.error("Database cannot connected...", err);
 })
 
