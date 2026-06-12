@@ -3,13 +3,27 @@ const express = require('express');
 const connectDB = require("./config/database");
 const User = require("./Models/user");
 const app = express();
+const { validationSignUpData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 app.use(express.json()); // Add this middleware for JSON parsing
 
 //addn the data into database
 app.post("/signup", async (req, res) => {
-   const user = new User(req.body);
    try {
+    //validate the data
+    validationSignUpData(req);
+    const {firstName, lastName, emailId, password} = req.body;
+    //Encrypt the password
+    const passwordHas = await bcrypt.hash(password, 10)    
+    //store in the database
+   const user = new User({
+    firstName,
+    lastName,
+    emailId,
+    password:passwordHas,
+   });
+
    await user.save();
     res.send("User added successfully...")
    } catch (err) {
@@ -52,7 +66,10 @@ app.get("/feed", async (req,res) => {
 app.delete("/user", async (req, res) => {
     const userId = req.body.userId
     try {
-        await User.findByIdAndDelete(userId);
+        const user = await User.findByIdAndDelete(userId);
+        if(!user) {
+            return res.status(404).send("User not found")
+        }
         res.send("User deleted successfully...")
     }catch (err) { 
         res.status(400).send("something went wrong")
@@ -76,7 +93,10 @@ app.patch("/user/:userId", async (req, res) => {
             res.status(400).send("Skills should not be more than 10")
         }
         const user = await User.findByIdAndUpdate(userId,data, { returnDocument: 'after', runValidators: true});
-        console.log(user);
+        if(!user) {
+            return res.status(404).send("User not found")
+        }
+        // console.log(user);
         res.send("User updated successfully...")
     } catch (err) { 
         res.status(400).send("Update profile failed: " + err.message)
