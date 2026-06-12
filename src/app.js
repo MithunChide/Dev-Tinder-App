@@ -61,30 +61,30 @@ app.delete("/user", async (req, res) => {
 
 //Patch - update the user details in the database
 
-// app.patch("/user", async (req, res) => {
-//     const userId = req.body.userId
-//     const data = req.body
-//     try {
-//         const user = await User.findByIdAndUpdate(userId,data, { returnDocument: 'after'});
-//         console.log(user);
-//         res.send("User updated successfully...")
-//     } catch (err) { 
-//         res.status(400).send("something went wrong")
-//     }
-// })
-
 app.patch("/user", async (req, res) => {
-    const {email} = req.body;
+    const userId = req.body.userId
     const data = req.body
-
     try {
-        const user = await User.findOneAndUpdate({email}, data, { returnDocument: 'after'});
+        const user = await User.findByIdAndUpdate(userId,data, { returnDocument: 'after', runValidators: true});
         console.log(user);
         res.send("User updated successfully...")
     } catch (err) { 
-        res.status(400).send("something went wrong" + err.message)
+        res.status(400).send("Update profile failed: " + err.message)
     }
 })
+
+// app.patch("/user", async (req, res) => {
+//     const {email} = req.body;
+//     const data = req.body
+
+//     try {
+//         const user = await User.findOneAndUpdate({email}, data, { returnDocument: 'after'});
+//         console.log(user);
+//         res.send("User updated successfully...")
+//     } catch (err) { 
+//         res.status(400).send("something went wrong" + err.message)
+//     }
+// })
 
 
 connectDB()
