@@ -92,7 +92,7 @@ app.delete("/user", async (req, res) => {
         }
         res.send("User deleted successfully...")
     }catch (err) { 
-        res.status(400).send("something went wrong")
+        res.status(400).send("something went wrong" + err.message)
     }
 })
 
