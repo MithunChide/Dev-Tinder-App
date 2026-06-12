@@ -20,9 +20,9 @@ app.post("/signup", async (req, res) => {
 
 //Get the user using email from the database
 app.get("/user", async (req, res) => {
-    const userEmail = req.body.email;
+    const userEmail = req.body.emailId;
     try {
-        const user = await User.find({email: userEmail});
+        const user = await User.find({emailId: userEmail});
         if(user.length === 0) {
             res.status(404).send("User not found")
         } else {
@@ -65,12 +65,12 @@ app.patch("/user/:userId", async (req, res) => {
     const userId = req.params?.userId
     const data = req.body
     try {
-        const ALLOWED_UPDATED = ["about", "skills","age"]
+        const ALLOWED_UPDATED = ["about", "skills","age","photoUrl"]
 
         const isUpdated = Object.keys(data).every((k) => ALLOWED_UPDATED.includes(k))
 
         if(!isUpdated) {
-            throw new error("Updated not found")
+            throw new Error("Updated not found")
         }
         if(data?.skills.length > 10) {
             res.status(400).send("Skills should not be more than 10")
