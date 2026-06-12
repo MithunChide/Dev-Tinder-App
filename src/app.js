@@ -28,9 +28,29 @@ app.post("/signup", async (req, res) => {
     res.send("User added successfully...")
    } catch (err) {
      console.log("Error:", err);
-     res.status(400).send("Error saving the data:" + err.message)
+     res.status(400).send("ERROR: " + err.message)
    }
 });
+
+//login API 
+app.post("/login", async (req, res) => {
+    try {
+        const {emailId, password} = req.body;
+        const user = await User.findOne({emailId: emailId});
+        if (!user) {
+            throw new Error("Invalid credential")
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if(!isPasswordValid) {
+            throw new Error("Invalid credential")
+        }
+        res.send("Yeahhhhh...Login Successfully!!!")
+       
+    } catch(err) {
+        res.status(400).send("ERROR: " + err.message)
+    }
+
+})
 
 //Get the user using email from the database
 app.get("/user", async (req, res) => {
