@@ -5,8 +5,10 @@ const User = require("./Models/user");
 const app = express();
 const { validationSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
-
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 app.use(express.json()); // Add this middleware for JSON parsing
+app.use(cookieParser()); //reading the cookies
 
 //addn the data into database
 app.post("/signup", async (req, res) => {
@@ -36,16 +38,50 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
     try {
         const {emailId, password} = req.body;
+        //find out the user and validate
         const user = await User.findOne({emailId: emailId});
         if (!user) {
             throw new Error("Invalid credential")
         }
+        //campare the password wheather is same or not
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(!isPasswordValid) {
             throw new Error("Invalid credential")
         }
-        res.send("Yeahhhhh...Login Successfully!!!")
+        //create the jwt token 
+       const token = await jwt.sign({_id : user._id}, "Dev@Tinder$2026")
+       // Add the token to the cookies and send back to the user
+       res.cookie("token" , token);
+       res.send("Yeahhhhh...Login Successfully!!!")
        
+    } catch(err) {
+        res.status(400).send("ERROR: " + err.message)
+    }
+
+})
+
+//Get User Profile by validating the cookies and token and send the user profile to the client/browser
+app.get("/profile", async (req,res) => {
+    try {
+        const cookies = req.cookies;
+        const {token} = cookies;
+        //validate the token
+         if(!token) {
+            throw new Error("Invalid Token")
+         }
+         //verify the user token
+        const decodedMessage = await jwt.verify(token, "Dev@Tinder$2026");
+         //getting user _id from the decaodedMessage
+        const {_id} = decodedMessage;
+         //getting user profile
+        const user = await User.findById(_id)
+        //validating user
+        if(!user) {
+            throw new Error("Invalid User")
+        }
+        //sendring the response to client/browser for user profile
+        res.send(user);
+
     } catch(err) {
         res.status(400).send("ERROR: " + err.message)
     }
