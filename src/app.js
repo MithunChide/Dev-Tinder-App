@@ -7,7 +7,7 @@ const { validationSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const {userAuth} = require("./middlewares/auth")
+const {userAuth} = require("./middlewares/auth");
 
 app.use(express.json()); // Add this middleware for JSON parsing
 app.use(cookieParser()); //reading the cookies
@@ -47,14 +47,12 @@ app.post("/login", async (req, res) => {
             throw new Error("Invalid credential")
         }
         //campare the password wheather is same or not
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await user.validatePassword(password);
         if(!isPasswordValid) {
             throw new Error("Invalid credential")
         }
         //create the jwt token 
-       const token = await jwt.sign({_id : user._id}, "Dev@Tinder$2026",
-        { expiresIn: '7d' }
-       )
+       const token = await user.getJWT();
        // Add the token to the cookies and send back to the user
        res.cookie("token" , token, {expires : new Date(Date.now() + 7*24*60*60*1000)});
        res.send("Yeahhhhh...Login Successfully!!!")
@@ -77,7 +75,6 @@ app.get("/profile",  userAuth, async (req,res) => {
 })
 
 //Post - sendConnectionRequest
-
 app.post("/sendConnectionRequest", userAuth, async (req,res) => { 
     try {
         const user = req.user;
