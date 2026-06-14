@@ -72,6 +72,7 @@ const userSchema = new mongoose.Schema({
 {
     timestamps:true,
 })
+
 //generating/creating the token help function
 userSchema.methods.getJWT = async function() {
     const user = this;
