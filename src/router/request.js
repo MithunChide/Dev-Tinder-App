@@ -7,7 +7,7 @@ const ConnectionRequest = require("../Models/connectionRequest");
 const User = require("../Models/user")
 
 //Post - send ConnectionRequest
-requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req,res,next) => { 
+requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req,res) => { 
     try {
         const fromUserId = req.user._id;
         const toUserId = req.params.toUserId;
@@ -20,7 +20,7 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req,res,n
                 message: "Invalid status type" + status,
             });
         }
-        // find the user already exist or not if not throw error
+        // find the user already exist in DB or not if not throw error
         const toUser = await User.findById(toUserId)
         if(!toUser) {
             return res.status(404).json({
